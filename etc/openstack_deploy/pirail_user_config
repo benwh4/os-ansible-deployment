@@ -1,0 +1,164 @@
+---
+cidr_networks:
+  management: 10.200.0.0/24
+  container: 10.200.236.0/22
+  tunnel: 10.200.240.0/22
+
+used_ips:
+  - 10.200.0.254
+  - 10.200.236.254
+  - 10.200.240.254
+  - "10.200.0.1,10.200.0.50"
+  - 10.200.236.60
+  - 10.200.236.99
+  - "10.200.236.1,10.200.236.15"
+  - "10.200.240.1,10.200.240.15"
+
+global_overrides:
+  internal_lb_vip_address: 10.200.236.10
+  external_lb_vip_address: 10.200.0.100
+  tunnel_bridge: "br-vxlan"
+  management_bridge: "br-mgmt"
+  provider_networks:
+    - network:
+        container_bridge: "br-mgmt"
+        container_type: "veth"
+        container_interface: "eth1"
+        ip_from_q: "container"
+        type: "raw"
+        group_binds:
+          - all_containers
+          - hosts
+        is_container_address: true
+        is_ssh_address: true
+    - network:
+        container_bridge: "br-vxlan"
+        container_type: "veth"
+        container_interface: "eth10"
+        ip_from_q: "tunnel"
+        type: "vxlan"
+        range: "1:1000"
+        net_name: "vxlan"
+        group_binds:
+          - neutron_linuxbridge_agent
+    - network:
+        container_bridge: "br-vlan"
+        container_type: "veth"
+        container_interface: "eth12"
+        host_bind_override: "eth12"
+        type: "flat"
+        net_name: "flat"
+        group_binds:
+          - neutron_linuxbridge_agent
+    - network:
+        container_bridge: "br-vlan"
+        container_type: "veth"
+        container_interface: "eth11"
+        type: "vlan"
+        range: "1:1"
+        net_name: "vlan"
+        group_binds:
+          - neutron_linuxbridge_agent
+
+shared-infra_hosts:
+  infra1:
+    # Rabbitmq, and galera are set to multiples to test clustering.
+    affinity:
+      galera_container: 3
+      rabbit_mq_container: 3
+    ip: 10.200.236.11
+  infra2:
+    # Rabbitmq, and galera are set to multiples to test clustering.
+    affinity:
+      galera_container: 3
+      rabbit_mq_container: 3
+    ip: 10.200.236.12
+  infra3:
+    # Rabbitmq, and galera are set to multiples to test clustering.
+    affinity:
+      galera_container: 3
+      rabbit_mq_container: 3
+    ip: 10.200.236.13
+
+os-infra_hosts:
+  infra1:
+    # Horizon is set to multiple to test clustering. This test only requires x2.
+    affinity:
+      horizon_container: 2
+    ip: 10.200.236.11
+  infra2:
+    # Horizon is set to multiple to test clustering. This test only requires x2.
+    affinity:
+      horizon_container: 2
+    ip: 10.200.236.12
+  infra2:
+    # Horizon is set to multiple to test clustering. This test only requires x2.
+    affinity:
+      horizon_container: 2
+    ip: 10.200.236.13
+
+storage-infra_hosts:
+  infra1:
+    ip: 10.200.236.11
+  infra2:
+    ip: 10.200.236.12
+  infra3:
+    ip: 10.200.236.13
+
+repo-infra_hosts:
+  infra1:
+    # Repo is set to multiple to test clustering. This test only requires x2.
+    affinity:
+      repo_container: 2
+    ip: 10.200.236.11
+  infra2:
+    # Repo is set to multiple to test clustering. This test only requires x2.
+    affinity:
+      repo_container: 2
+    ip: 10.200.236.12
+  infra2:
+    # Repo is set to multiple to test clustering. This test only requires x2.
+    affinity:
+      repo_container: 2
+    ip: 10.200.236.13
+
+identity_hosts:
+  infra1:
+    # Keystone is set to multiple to test clustering. This test only requires x2.
+    affinity:
+      keystone_container: 2
+    ip: 10.200.236.11
+  infra2:
+    # Keystone is set to multiple to test clustering. This test only requires x2.
+    affinity:
+      keystone_container: 2
+    ip: 10.200.236.12
+  infra3:
+    # Keystone is set to multiple to test clustering. This test only requires x2.
+    affinity:
+      keystone_container: 2
+    ip: 10.200.236.13
+
+compute_hosts:
+  compute1:
+    ip: 10.200.236.60
+
+log_hosts:
+  log1:
+    ip: 10.200.236.99
+
+network_hosts:
+  infra1:
+    ip: 10.200.236.11
+  infra2:
+    ip: 10.200.236.12
+  infra3:
+    ip: 10.200.236.13
+
+haproxy_hosts:
+  infra1:
+    ip: 10.200.236.11
+  infra2:
+    ip: 10.200.236.12
+  infra3:
+    ip: 10.200.236.13
